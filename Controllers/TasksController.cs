@@ -1,11 +1,13 @@
 
 using ASP.NET_Core_REST_API.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
-namespace ASP.NET_Core_REST_API
+namespace ASP.NET_Core_REST_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TasksController : ControllerBase
     {
         private readonly ITaskService _taskService;
@@ -22,8 +24,8 @@ namespace ASP.NET_Core_REST_API
             return Ok(tasks);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TaskDTO>> GetTask(int id)
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<TaskDTO>> GetTask(Guid id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
 
@@ -42,8 +44,8 @@ namespace ASP.NET_Core_REST_API
             return CreatedAtAction(nameof(GetTask), new {id = created.Id}, created);
         }
         
-        [HttpPut("{id}")]
-        public async Task<ActionResult<TaskDTO>> UpdateTask(int id, UpdateTaskDTO dto)
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult<TaskDTO>> UpdateTask(Guid id, UpdateTaskDTO dto)
         {
             var updated =  await _taskService.UpdateTaskAsync(id, dto);
 
@@ -55,8 +57,8 @@ namespace ASP.NET_Core_REST_API
             return Ok(updated);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteTask(int id)
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> DeleteTask(Guid id)
         {
             var deleted = await _taskService.DeleteTaskAsync(id);
 
