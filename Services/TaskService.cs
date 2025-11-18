@@ -2,6 +2,7 @@
 using ASP.NET_Core_REST_API.DTOs;
 using ASP.NET_Core_REST_API.Models;
 using ASP.NET_Core_REST_API.Repositories;
+using ASP.NET_Core_REST_API.Exceptions;
 using AutoMapper;
 
 namespace ASP.NET_Core_REST_API
@@ -23,7 +24,7 @@ namespace ASP.NET_Core_REST_API
             return _mapper.Map<IEnumerable<TaskDTO>>(tasks);
         }
 
-        public async Task<TaskDTO?> GetTaskByIdAsync(int id)
+        public async Task<TaskDTO?> GetTaskByIdAsync(Guid id)
         {
             var task = await _repository.GetByIdAsync(id);
             return _mapper.Map<TaskDTO>(task);
@@ -36,7 +37,7 @@ namespace ASP.NET_Core_REST_API
             return _mapper.Map<TaskDTO>(created);
         }
 
-        public async Task<TaskDTO?> UpdateTaskAsync(int id, UpdateTaskDTO dto)
+        public async Task<TaskDTO?> UpdateTaskAsync(Guid id, UpdateTaskDTO dto)
         {
             var task = _mapper.Map<TaskItem>(dto);
             task.Id = id;
@@ -44,8 +45,15 @@ namespace ASP.NET_Core_REST_API
             return _mapper.Map<TaskDTO>(updated);
         }
 
-        public async Task<bool> DeleteTaskAsync(int id)
+        public async Task<bool> DeleteTaskAsync(Guid id)
         {
+            var existingTask = await _repository.GetByIdAsync(id);
+
+            if (existingTask != null && existingTask.IsCompleted)
+            {
+                throw new BadRequestException("Cannot delete completed tasks");
+            }
+
             return await _repository.DeleteAsync(id);
         }
     }

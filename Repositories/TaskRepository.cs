@@ -18,7 +18,7 @@ namespace ASP.NET_Core_REST_API.Repositories
             return await _context.Tasks.OrderByDescending(t => t.CreatedAt).ToListAsync();
         }
 
-        public async Task<TaskItem?> GetByIdAsync(int id)
+        public async Task<TaskItem?> GetByIdAsync(Guid id)
         {
             return await _context.Tasks.FindAsync(id);
         }
@@ -54,7 +54,7 @@ namespace ASP.NET_Core_REST_API.Repositories
             return existing;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var task = await _context.Tasks.FindAsync(id);
             if(task == null) return false;
@@ -64,7 +64,7 @@ namespace ASP.NET_Core_REST_API.Repositories
             return true;
         }
 
-        public async Task<bool> ExistsAsync(int id)
+        public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.Tasks.AnyAsync(t => t.Id == id);
         }
